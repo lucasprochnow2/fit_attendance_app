@@ -1,0 +1,25 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:16
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: fit_attendance
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+
+  web:
+    build: .
+    command: bash -c "python manage.py migrate && python manage.py runserver 0.0.0.0:${PORT:-8000}"
+    volumes:
+      - .:/app
+    ports:
+      - "8000:${PORT:-8000}"
+    depends_on:
+      - db
+    env_file: ".env"
+
+volumes:
+  postgres_data:
